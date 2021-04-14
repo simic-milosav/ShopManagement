@@ -9,23 +9,24 @@ namespace ShopManagementApp
         public float Price { get; set; }
         public float Shipping { get; set; }
         public DateTime Created { get; set; }
-        public bool IsShipped { get; set; }
+        public bool Status { get; set; }
         public List<Product> Products { get; set; }
 
-        public Order() { }
-
-        public Order(float shipping, List<Product> products)
+        public Order()
         {
-            Shipping = shipping;
-            Products = products;
-            Created = DateTime.Now;
+            Products = new List<Product>();
         }
 
-        private void CalculatePrice()
+        public Order(DateTime created)
+            : this()
         {
-            foreach (Product product in Products)            
-                if (!product.IsFree)                
-                    Price += product.TaxedPrice - product.TaxedPrice * product.Discount / 100;
+            Created = created;
+        }
+
+        public void CalculatePrice()
+        {
+            foreach (Product product in Products)
+                Price += (product.TaxedPrice - product.TaxedPrice * product.Discount / 100) * product.SelectedAmount;
             Price += Shipping;
         }
     }

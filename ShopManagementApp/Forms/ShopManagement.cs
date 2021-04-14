@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data.SqlClient;
 using System.Windows.Forms;
+using System.Configuration;
 
 
 namespace ShopManagementApp
@@ -21,7 +22,7 @@ namespace ShopManagementApp
         {
             try
             {
-                DatabaseConnection.Connection = new SqlConnection(@"Data Source=DESKTOP-E0VTEN2\SQLEXPRESS;Initial Catalog=shop_management_db;Integrated Security=True");
+                DatabaseConnection.Connection = new SqlConnection(ConfigurationManager.ConnectionStrings[1].ConnectionString);
                 DatabaseConnection.Connection.Open();
                 MessageBox.Show("Successfully connected to database.", "Message", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }

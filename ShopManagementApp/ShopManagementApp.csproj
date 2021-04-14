@@ -115,6 +115,12 @@
     </Compile>
     <Compile Include="Control\DatabaseConnection.cs" />
     <Compile Include="Control\FormControls.cs" />
+    <Compile Include="Forms\NewOrder.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\NewOrder.Designer.cs">
+      <DependentUpon>NewOrder.cs</DependentUpon>
+    </Compile>
     <Compile Include="Model\Customer.cs" />
     <Compile Include="Model\Order.cs" />
     <Compile Include="Model\Product.cs" />
@@ -140,6 +146,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Forms\CustomersManagement.resx">
       <DependentUpon>CustomersManagement.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\NewOrder.resx">
+      <DependentUpon>NewOrder.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\OrdersManagement.resx">
+      <DependentUpon>OrdersManagement.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ProductsManagement.resx">
       <DependentUpon>ProductsManagement.cs</DependentUpon>
@@ -182,6 +194,9 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="AppData\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

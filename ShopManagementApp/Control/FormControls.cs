@@ -30,6 +30,10 @@ namespace ShopManagementApp
                         RadioButton rButton = (RadioButton)element;
                         rButton.Checked = false;
                         break;
+                    case "ListBox":
+                        ListBox lBox = (ListBox)element;
+                        lBox.DataSource = null;
+                        break;
                     default:
                         break;
                 }
