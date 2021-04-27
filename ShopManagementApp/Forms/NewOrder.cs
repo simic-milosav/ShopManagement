@@ -1,6 +1,13 @@
-﻿using System;
+﻿/*
+ 
+    Placing new order.
+    Selecting products for order.
+    Create new customer or select existing one.
+ 
+*/
+
+using System;
 using System.ComponentModel;
-using System.Data;
 using System.Data.SqlClient;
 using System.Windows.Forms;
 

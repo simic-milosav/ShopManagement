@@ -1,4 +1,12 @@
-﻿using ShopManagementApp.Forms;
+﻿/*
+ 
+    CRUD operations for orders.
+    View customers who created orders.
+    View products in orders.
+ 
+*/
+
+using ShopManagementApp.Forms;
 using System;
 using System.Data;
 using System.Data.SqlClient;

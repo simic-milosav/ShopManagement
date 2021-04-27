@@ -1,4 +1,11 @@
-﻿using System;
+﻿/* 
+ 
+ Form elements controllers 
+ Common methods for all forms.
+ 
+*/
+
+using System;
 using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;

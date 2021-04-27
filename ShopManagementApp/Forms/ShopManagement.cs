@@ -1,4 +1,10 @@
-﻿using System;
+﻿/*
+ 
+    Main form for selecting which type to manipulate. 
+ 
+*/
+
+using System;
 using System.Configuration;
 using System.Data.SqlClient;
 using System.Windows.Forms;
