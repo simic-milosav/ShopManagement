@@ -10,8 +10,8 @@ namespace ShopManagementApp.Forms
     {
         private Order order;
         private Customer customer;
-        private readonly SqlCommand defaultCustomersCommand = new SqlCommand("select * from customer", ShopManagement.Connection);
-        private readonly SqlCommand defaultProductsCommand = new SqlCommand("select * from product", ShopManagement.Connection);
+        private readonly SqlCommand defaultCustomersCommand = new SqlCommand("select * from customer", FormControls.DbConnection);
+        private readonly SqlCommand defaultProductsCommand = new SqlCommand("select * from product", FormControls.DbConnection);
         private bool cstIsSelected;
         private bool productsAdded;
 
@@ -26,7 +26,8 @@ namespace ShopManagementApp.Forms
             gb_NewCst.Enabled = false;
             FormControls.HideDGVColumns(dgv_Customers.Columns[0], dgv_Customers.Columns[7], dgv_Products.Columns[2]);
             FormControls.SetComboboxDefaultValue(cBoxType);
-            BindData();
+            FormControls.BindData(dgv_Customers, command: defaultCustomersCommand);
+            FormControls.BindData(dgv_Products, command: defaultProductsCommand);
         }
 
         private void rb_ExCst_CheckedChanged(object sender, EventArgs e)
@@ -70,29 +71,29 @@ namespace ShopManagementApp.Forms
         {
             if (e.KeyCode == Keys.Enter && !string.IsNullOrEmpty(txt_Search.Text))
             {
-                SqlCommand command = new SqlCommand("select * from product where product_id = '" + txt_Search.Text + "' OR name LIKE '" + txt_Search.Text + "%' OR brand = '" + txt_Search.Text + "' OR type = '" + txt_Search.Text + "' OR subtype = '" + txt_Search.Text + "'", ShopManagement.Connection);
-                BindData(command, dgv_Products);
+                SqlCommand command = new SqlCommand("select * from product where product_id = '" + txt_Search.Text + "' OR name LIKE '" + txt_Search.Text + "%' OR brand = '" + txt_Search.Text + "' OR type = '" + txt_Search.Text + "' OR subtype = '" + txt_Search.Text + "'", FormControls.DbConnection);
+                FormControls.BindData(dgv_Products, command: command);
             }
         }
 
         private void txt_Search_TextChanged(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(txt_Search.Text))
-                BindData(defaultProductsCommand, dgv_Products);
+                FormControls.BindData(dgv_Products, command: defaultProductsCommand);
         }
 
         private void txt_SearchCst_TextChanged(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(txt_SearchCst.Text))
-                BindData(defaultCustomersCommand, dgv_Customers);
+                FormControls.BindData(dgv_Customers, command: defaultCustomersCommand);
         }
 
         private void txt_SearchCst_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter && !string.IsNullOrEmpty(txt_Search.Text))
             {
-                SqlCommand command = new SqlCommand("select * from customer where name LIKE '" + txt_SearchCst.Text + "%' OR surname LIKE '" + txt_SearchCst.Text + "%' OR address LIKE '" + txt_SearchCst.Text + "%' OR phone_number = '" + txt_SearchCst.Text + "' OR email = '" + txt_SearchCst.Text + "' OR type = '" + txt_SearchCst.Text + "'", ShopManagement.Connection);
-                BindData(command, dgv_Customers);
+                SqlCommand command = new SqlCommand("select * from customer where name LIKE '" + txt_SearchCst.Text + "%' OR surname LIKE '" + txt_SearchCst.Text + "%' OR address LIKE '" + txt_SearchCst.Text + "%' OR phone_number = '" + txt_SearchCst.Text + "' OR email = '" + txt_SearchCst.Text + "' OR type = '" + txt_SearchCst.Text + "'", FormControls.DbConnection);
+                FormControls.BindData(dgv_Customers, command: command);
             }
         }
 
@@ -122,7 +123,7 @@ namespace ShopManagementApp.Forms
             {
                 if (dgv_Customers.SelectedRows.Count == 1)
                 {
-                    SqlCommand getCustomer = new SqlCommand("select customer_id, type, orders_number from customer where customer_id = '" + dgv_Customers.CurrentRow.Cells[0].Value + "'", ShopManagement.Connection);
+                    SqlCommand getCustomer = new SqlCommand("select customer_id, type, orders_number from customer where customer_id = '" + dgv_Customers.CurrentRow.Cells[0].Value + "'", FormControls.DbConnection);
                     customer = new Customer();
                     using (SqlDataReader customerReader = getCustomer.ExecuteReader())
                     {
@@ -185,42 +186,19 @@ namespace ShopManagementApp.Forms
             FormControls.ProvideError(e, txtPhoneNum, errorProvider);
         }
 
-        private void BindData(SqlCommand command = null, DataGridView dataGridView = null)
-        {
-            try
-            {
-                if (command != null && dataGridView != null)
-                {
-                    SqlDataAdapter adapter = new SqlDataAdapter(command);
-                    DataTable table = new DataTable();
-                    adapter.Fill(table);
-                    dataGridView.DataSource = table;
-                }
-                else
-                {
-                    BindData(defaultCustomersCommand, dgv_Customers);
-                    BindData(defaultProductsCommand, dgv_Products);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Message", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
         private int ProcessCustomer()
         {
             int customerID;
             if (rb_NewCst.Checked)
             {
-                SqlCommand newCustomer = new SqlCommand("insert into customer values ('" + txtName.Text + "','" + txtSurname.Text + "','" + txtAddress.Text + "','" + txtPhoneNum.Text + "','" + txtEmail.Text + "','" + cBoxType.Text + "','" + 1 + "')", ShopManagement.Connection);
+                SqlCommand newCustomer = new SqlCommand("insert into customer values ('" + txtName.Text + "','" + txtSurname.Text + "','" + txtAddress.Text + "','" + txtPhoneNum.Text + "','" + txtEmail.Text + "','" + cBoxType.Text + "','" + 1 + "')", FormControls.DbConnection);
                 newCustomer.ExecuteNonQuery();
-                SqlCommand newCustomerId = new SqlCommand("select max(customer_id) from customer", ShopManagement.Connection);
+                SqlCommand newCustomerId = new SqlCommand("select max(customer_id) from customer", FormControls.DbConnection);
                 customerID = (int)newCustomerId.ExecuteScalar();
             }
             else
             {
-                SqlCommand updateCustomer = new SqlCommand("update customer set type = '" + customer.Type + "', orders_number = '" + customer.OrdersNum + "' where customer_id = '" + customer.CustomerId + "'", ShopManagement.Connection);
+                SqlCommand updateCustomer = new SqlCommand("update customer set type = '" + customer.Type + "', orders_number = '" + customer.OrdersNum + "' where customer_id = '" + customer.CustomerId + "'", FormControls.DbConnection);
                 customer.OrdersNum += 1;
                 customer.SetType();
                 customerID = customer.CustomerId;
@@ -233,21 +211,21 @@ namespace ShopManagementApp.Forms
         {
             order.Shipping = rb_ChargeShp.Checked ? float.Parse(txt_ShpPrice.Text) : 0;
             order.CalculatePrice();
-            SqlCommand newOrder = new SqlCommand("insert into orders values ('" + order.Price + "','" + order.Created + "', 'Preparing')", ShopManagement.Connection);
+            SqlCommand newOrder = new SqlCommand("insert into orders values ('" + order.Price + "','" + order.Created + "', 'Preparing')", FormControls.DbConnection);
             newOrder.ExecuteNonQuery();
-            SqlCommand newOrderId = new SqlCommand("select max(order_id) from orders", ShopManagement.Connection);
+            SqlCommand newOrderId = new SqlCommand("select max(order_id) from orders", FormControls.DbConnection);
             order.OrderId = (int)newOrderId.ExecuteScalar();
         }
 
         private void FillTables(int customerID)
         {
-            SqlCommand customerOrders = new SqlCommand("insert into customer_orders values ('" + customerID + "','" + order.OrderId + "')", ShopManagement.Connection);
+            SqlCommand customerOrders = new SqlCommand("insert into customer_orders values ('" + customerID + "','" + order.OrderId + "')", FormControls.DbConnection);
             customerOrders.ExecuteNonQuery();
             foreach (Product product in order.Products)
             {
-                SqlCommand updateProduct = new SqlCommand("update product set stock = '" + product.Stock + "' where product_id = '" + product.ProductId + "'", ShopManagement.Connection);
+                SqlCommand updateProduct = new SqlCommand("update product set stock = '" + product.Stock + "' where product_id = '" + product.ProductId + "'", FormControls.DbConnection);
                 updateProduct.ExecuteNonQuery();
-                SqlCommand ordersProducts = new SqlCommand("insert into order_products values ('" + order.OrderId + "','" + product.ProductId + "','" + product.SelectedAmount + "')", ShopManagement.Connection);
+                SqlCommand ordersProducts = new SqlCommand("insert into order_products values ('" + order.OrderId + "','" + product.ProductId + "','" + product.SelectedAmount + "')", FormControls.DbConnection);
                 ordersProducts.ExecuteNonQuery();
             }
         }

@@ -1,15 +1,13 @@
 ﻿using System;
+using System.Configuration;
 using System.Data.SqlClient;
 using System.Windows.Forms;
-using System.Configuration;
 
 
 namespace ShopManagementApp
 {
     public partial class ShopManagement : Form
     {
-        public static SqlConnection Connection { get; set; }
-
         public ShopManagement()
         {
             InitializeComponent();
@@ -17,15 +15,15 @@ namespace ShopManagementApp
 
         ~ShopManagement()
         {
-            Connection.Close();
+            FormControls.DbConnection.Close();
         }
 
         private void ShopManagement_Load(object sender, EventArgs e)
         {
             try
             {
-                Connection = new SqlConnection(ConfigurationManager.ConnectionStrings[1].ConnectionString);
-                Connection.Open();
+                FormControls.DbConnection = new SqlConnection(ConfigurationManager.ConnectionStrings[1].ConnectionString);
+                FormControls.DbConnection.Open();
                 MessageBox.Show("Successfully connected to database.", "Message", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)

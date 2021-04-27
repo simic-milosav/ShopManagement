@@ -1,4 +1,7 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
+using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -6,6 +9,8 @@ namespace ShopManagementApp
 {
     internal sealed class FormControls
     {
+        public static SqlConnection DbConnection { get; set; }
+
         public static void ShowFields(bool value, params Control[] formElements)
         {
             foreach (Control element in formElements)
@@ -53,6 +58,23 @@ namespace ShopManagementApp
         {
             foreach (DataGridViewColumn column in columns)
                 column.Visible = false;
+        }
+
+        public static void BindData(DataGridView dataGridView, string tableName = null, SqlCommand command = null)
+        {
+            try
+            {
+                if (command == null)
+                    command = new SqlCommand($"select * from {tableName}", FormControls.DbConnection);
+                SqlDataAdapter adapter = new SqlDataAdapter(command);
+                DataTable table = new DataTable();
+                adapter.Fill(table);
+                dataGridView.DataSource = table;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Message", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         public static void ProvideError(CancelEventArgs e, Control formElement, ErrorProvider errorProvider)

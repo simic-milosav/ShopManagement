@@ -24,7 +24,7 @@ namespace ShopManagementApp
         {
             FormControls.ShowFields(false, txtProductId, txtName, txtPrice, txtStock, txtDiscount, cbBrand, cbColor, cbSize, rbClothing, rbFemale, rbFootwear, rbKids, rbMale, gb_Subtype, gb_Type, btnCancel, btnSave, label1, label2, label3, label4, label5, label6, label7, label8, label9, label11);
             FormControls.SetComboboxDefaultValue(cbBrand, cbColor, cbSize);
-            BindData();
+            FormControls.BindData(dgv_Product, "product");
         }
 
         private void btnNew_Click(object sender, EventArgs e)
@@ -52,11 +52,11 @@ namespace ShopManagementApp
         {
             try
             {
-                SqlCommand command = new SqlCommand("delete product where id = '" + (int)dgv_Product.CurrentRow.Cells[0].Value + "'", ShopManagement.Connection);
+                SqlCommand command = new SqlCommand("delete product where id = '" + (int)dgv_Product.CurrentRow.Cells[0].Value + "'", FormControls.DbConnection);
                 if (MessageBox.Show("Are you sure you want to delete selected products?", "Message", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
                     command.ExecuteNonQuery();
-                    BindData();
+                    FormControls.BindData(dgv_Product, "product");
                     MessageBox.Show("Product successfully removed.", "Message", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
@@ -75,11 +75,11 @@ namespace ShopManagementApp
                     FormControls.ShowFields(false, txtProductId, txtName, txtPrice, txtStock, txtDiscount, cbBrand, cbColor, cbSize, rbClothing, rbFemale, rbFootwear, rbKids, rbMale, gb_Subtype, gb_Type, btnCancel, btnSave, label1, label2, label3, label4, label5, label6, label7, label8, label9, label11);
                     SqlCommand command;
                     if (isNew)
-                        command = new SqlCommand("insert into product values ('" + txtProductId.Text + "','" + txtName.Text + "','" + cbBrand.SelectedItem + "','" + CheckedRadioButton(gb_Type) + "','" + CheckedRadioButton(gb_Subtype) + "','" + cbColor.SelectedItem + "','" + cbSize.SelectedItem + "','" + txtPrice.Text + "','" + txtDiscount.Text + "','" + txtStock.Text + "')", ShopManagement.Connection);
+                        command = new SqlCommand("insert into product values ('" + txtProductId.Text + "','" + txtName.Text + "','" + cbBrand.SelectedItem + "','" + CheckedRadioButton(gb_Type) + "','" + CheckedRadioButton(gb_Subtype) + "','" + cbColor.SelectedItem + "','" + cbSize.SelectedItem + "','" + txtPrice.Text + "','" + txtDiscount.Text + "','" + txtStock.Text + "')", FormControls.DbConnection);
                     else
-                        command = new SqlCommand("update product set product_id = '" + txtProductId.Text + "', name = '" + txtName.Text + "', brand = '" + cbBrand.SelectedItem + "', type = '" + CheckedRadioButton(gb_Type) + "', subtype = '" + CheckedRadioButton(gb_Subtype) + "', color = '" + cbColor.SelectedItem + "', size = '" + cbSize.SelectedItem + "', price = '" + txtPrice.Text + "', discount = '" + txtDiscount.Text + "', stock = '" + txtStock.Text + "' where id = '" + (int)dgv_Product.CurrentRow.Cells[0].Value + "'", ShopManagement.Connection);
+                        command = new SqlCommand("update product set product_id = '" + txtProductId.Text + "', name = '" + txtName.Text + "', brand = '" + cbBrand.SelectedItem + "', type = '" + CheckedRadioButton(gb_Type) + "', subtype = '" + CheckedRadioButton(gb_Subtype) + "', color = '" + cbColor.SelectedItem + "', size = '" + cbSize.SelectedItem + "', price = '" + txtPrice.Text + "', discount = '" + txtDiscount.Text + "', stock = '" + txtStock.Text + "' where id = '" + (int)dgv_Product.CurrentRow.Cells[0].Value + "'", FormControls.DbConnection);
                     command.ExecuteNonQuery();
-                    BindData();
+                    FormControls.BindData(dgv_Product, "product");
                     MessageBox.Show("Your data has been successfully saved.", "Message", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
@@ -109,14 +109,14 @@ namespace ShopManagementApp
         private void txtSearch_TextChanged(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(txtSearch.Text))
-                BindData();
+                FormControls.BindData(dgv_Product, "product");
         }
 
         private void txtSearch_KeyDown(object sender, KeyEventArgs e)
         {
-            SqlCommand command = new SqlCommand("select * from product where product_id LIKE '" + txtSearch.Text + "%' OR name LIKE '" + txtSearch.Text + "%' OR price LIKE '" + txtSearch.Text + "%' OR discount = '" + txtSearch.Text + "'", ShopManagement.Connection);
+            SqlCommand command = new SqlCommand("select * from product where product_id LIKE '" + txtSearch.Text + "%' OR name LIKE '" + txtSearch.Text + "%' OR price LIKE '" + txtSearch.Text + "%' OR discount = '" + txtSearch.Text + "'", FormControls.DbConnection);
             if (e.KeyCode == Keys.Enter && !string.IsNullOrEmpty(txtSearch.Text))
-                BindData(command);
+                FormControls.BindData(dgv_Product, "product", command);
         }
 
         private void txtProductId_Validating(object sender, CancelEventArgs e)
@@ -162,23 +162,6 @@ namespace ShopManagementApp
         private void txtStock_Validating(object sender, CancelEventArgs e)
         {
             FormControls.ProvideError(e, txtStock, errorProvider);
-        }
-
-        private void BindData(SqlCommand command = null)
-        {
-            try
-            {
-                if (command == null)
-                    command = new SqlCommand("select * from product", ShopManagement.Connection);
-                SqlDataAdapter productAdapter = new SqlDataAdapter(command);
-                DataTable productTable = new DataTable();
-                productAdapter.Fill(productTable);
-                dgv_Product.DataSource = productTable;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Message", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
         }
 
         private void BindFields()
