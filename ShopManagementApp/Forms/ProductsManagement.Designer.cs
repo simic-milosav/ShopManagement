@@ -236,7 +236,7 @@ namespace ShopManagementApp
             this.rbMale.TabStop = true;
             this.rbMale.Text = "Male";
             this.rbMale.UseVisualStyleBackColor = true;
-            this.rbMale.CheckedChanged += new System.EventHandler(this.rbMale_CheckedChanged);
+            this.rbMale.CheckedChanged += new System.EventHandler(this.rbFootwear_CheckedChanged);
             // 
             // rbFemale
             // 
@@ -248,7 +248,7 @@ namespace ShopManagementApp
             this.rbFemale.TabStop = true;
             this.rbFemale.Text = "Female";
             this.rbFemale.UseVisualStyleBackColor = true;
-            this.rbFemale.CheckedChanged += new System.EventHandler(this.rbFemale_CheckedChanged);
+            this.rbFemale.CheckedChanged += new System.EventHandler(this.rbFootwear_CheckedChanged);
             // 
             // rbKids
             // 
@@ -260,7 +260,7 @@ namespace ShopManagementApp
             this.rbKids.TabStop = true;
             this.rbKids.Text = "Kids";
             this.rbKids.UseVisualStyleBackColor = true;
-            this.rbKids.CheckedChanged += new System.EventHandler(this.rbKids_CheckedChanged);
+            this.rbKids.CheckedChanged += new System.EventHandler(this.rbFootwear_CheckedChanged);
             // 
             // rbFootwear
             // 
@@ -284,7 +284,7 @@ namespace ShopManagementApp
             this.rbClothing.TabStop = true;
             this.rbClothing.Text = "Clothing";
             this.rbClothing.UseVisualStyleBackColor = true;
-            this.rbClothing.CheckedChanged += new System.EventHandler(this.rbClothing_CheckedChanged);
+            this.rbClothing.CheckedChanged += new System.EventHandler(this.rbFootwear_CheckedChanged);
             // 
             // gb_Type
             // 

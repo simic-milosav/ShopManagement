@@ -34,7 +34,7 @@ namespace ShopManagementApp
 
         private void txt_Search_KeyDown(object sender, KeyEventArgs e)
         {
-            SqlCommand command = new SqlCommand("select * from customer where order_id = '" + txt_Search.Text + "'", DatabaseConnection.Connection);
+            SqlCommand command = new SqlCommand("select * from customer where order_id = '" + txt_Search.Text + "'", ShopManagement.Connection);
             if (e.KeyCode == Keys.Enter && !string.IsNullOrEmpty(txt_Search.Text))
                 BindData(command);
         }
@@ -59,7 +59,7 @@ namespace ShopManagementApp
         {
             try
             {
-                SqlCommand command = new SqlCommand("delete orders where order_id = '" + (int)dgv_Orders.CurrentRow.Cells[0].Value + "'", DatabaseConnection.Connection);
+                SqlCommand command = new SqlCommand("delete orders where order_id = '" + (int)dgv_Orders.CurrentRow.Cells[0].Value + "'", ShopManagement.Connection);
                 if (MessageBox.Show("Are you sure you want to delete selected order?", "Message", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
                     command.ExecuteNonQuery();
@@ -77,7 +77,7 @@ namespace ShopManagementApp
         {
             try
             {
-                SqlCommand command = new SqlCommand("update orders set status = '" + gb_Status.Controls.OfType<RadioButton>().Where(r => r.Checked).FirstOrDefault().Text + "' where order_id = '" + (int)dgv_Orders.CurrentRow.Cells[0].Value + "'", DatabaseConnection.Connection);
+                SqlCommand command = new SqlCommand("update orders set status = '" + gb_Status.Controls.OfType<RadioButton>().Where(r => r.Checked).FirstOrDefault().Text + "' where order_id = '" + (int)dgv_Orders.CurrentRow.Cells[0].Value + "'", ShopManagement.Connection);
                 command.ExecuteNonQuery();
                 BindData();
                 FormControls.ShowFields(false, gb_Status, gb_OrderDetails, btn_Save, btn_Cancel);
@@ -95,7 +95,7 @@ namespace ShopManagementApp
             {
                 if (command == null && dataGridView == null)
                 {
-                    command = new SqlCommand("select * from orders", DatabaseConnection.Connection);
+                    command = new SqlCommand("select * from orders", ShopManagement.Connection);
                     dataGridView = dgv_Orders;
                 }
                 SqlDataAdapter adapter = new SqlDataAdapter(command);
@@ -114,14 +114,14 @@ namespace ShopManagementApp
             if (dgv_Orders.SelectedRows.Count == 1)
             {
                 //binding customer who made the order
-                SqlCommand getCustomer = new SqlCommand("select * from customer where customer_id = (select cast(customer_id as int) from customer_orders where order_id = '" + dgv_Orders.CurrentRow.Cells[0].Value + "')", DatabaseConnection.Connection);
+                SqlCommand getCustomer = new SqlCommand("select * from customer where customer_id = (select cast(customer_id as int) from customer_orders where order_id = '" + dgv_Orders.CurrentRow.Cells[0].Value + "')", ShopManagement.Connection);
                 BindData(getCustomer, dgv_Customer);
-                HideColumns(dgv_Customer.Columns[0], dgv_Customer.Columns[6], dgv_Customer.Columns[7]);
+                FormControls.HideDGVColumns(dgv_Customer.Columns[0], dgv_Customer.Columns[6], dgv_Customer.Columns[7]);
 
                 //binding products from order
-                SqlCommand getProducts = new SqlCommand("select * from product where product_id = (select product_id from order_products where order_id = '" + dgv_Orders.CurrentRow.Cells[0].Value + "')", DatabaseConnection.Connection);
+                SqlCommand getProducts = new SqlCommand("select * from product where product_id = (select product_id from order_products where order_id = '" + dgv_Orders.CurrentRow.Cells[0].Value + "')", ShopManagement.Connection);
                 BindData(getProducts, dgv_Products);
-                HideColumns(dgv_Products.Columns[1], dgv_Products.Columns[11]);
+                FormControls.HideDGVColumns(dgv_Products.Columns[1], dgv_Products.Columns[11]);
                 UpdateProductAmount();
 
                 //binding order status
@@ -137,7 +137,7 @@ namespace ShopManagementApp
                 {
                     if (row.Cells[2].Value != null)
                     {
-                        SqlCommand command = new SqlCommand("select product_amount from order_products where product_id = '" + (string)row.Cells[2].Value + "' and order_id = '" + (int)dgv_Orders.CurrentRow.Cells[0].Value + "'", DatabaseConnection.Connection);
+                        SqlCommand command = new SqlCommand("select product_amount from order_products where product_id = '" + (string)row.Cells[2].Value + "' and order_id = '" + (int)dgv_Orders.CurrentRow.Cells[0].Value + "'", ShopManagement.Connection);
                         row.Cells[0].Value = (int)command.ExecuteScalar();
                         dgv_Products.Refresh();
                     }
@@ -147,12 +147,6 @@ namespace ShopManagementApp
             {
                 MessageBox.Show(ex.Message, "Message", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-        }
-
-        private void HideColumns(params DataGridViewColumn[] columns)
-        {
-            foreach (DataGridViewColumn column in columns)
-                column.Visible = false;
         }
     }
 }

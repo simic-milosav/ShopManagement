@@ -49,6 +49,12 @@ namespace ShopManagementApp
             }
         }
 
+        public static void HideDGVColumns(params DataGridViewColumn[] columns)
+        {
+            foreach (DataGridViewColumn column in columns)
+                column.Visible = false;
+        }
+
         public static void ProvideError(CancelEventArgs e, Control formElement, ErrorProvider errorProvider)
         {
             switch (formElement.GetType().Name)

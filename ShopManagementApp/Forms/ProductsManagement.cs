@@ -24,7 +24,7 @@ namespace ShopManagementApp
         {
             FormControls.ShowFields(false, txtProductId, txtName, txtPrice, txtStock, txtDiscount, cbBrand, cbColor, cbSize, rbClothing, rbFemale, rbFootwear, rbKids, rbMale, gb_Subtype, gb_Type, btnCancel, btnSave, label1, label2, label3, label4, label5, label6, label7, label8, label9, label11);
             FormControls.SetComboboxDefaultValue(cbBrand, cbColor, cbSize);
-            BindData(); 
+            BindData();
         }
 
         private void btnNew_Click(object sender, EventArgs e)
@@ -52,7 +52,7 @@ namespace ShopManagementApp
         {
             try
             {
-                SqlCommand command = new SqlCommand("delete product where id = '" + (int)dgv_Product.CurrentRow.Cells[0].Value + "'", DatabaseConnection.Connection);
+                SqlCommand command = new SqlCommand("delete product where id = '" + (int)dgv_Product.CurrentRow.Cells[0].Value + "'", ShopManagement.Connection);
                 if (MessageBox.Show("Are you sure you want to delete selected products?", "Message", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
                     command.ExecuteNonQuery();
@@ -75,9 +75,9 @@ namespace ShopManagementApp
                     FormControls.ShowFields(false, txtProductId, txtName, txtPrice, txtStock, txtDiscount, cbBrand, cbColor, cbSize, rbClothing, rbFemale, rbFootwear, rbKids, rbMale, gb_Subtype, gb_Type, btnCancel, btnSave, label1, label2, label3, label4, label5, label6, label7, label8, label9, label11);
                     SqlCommand command;
                     if (isNew)
-                        command = new SqlCommand("insert into product values ('" + txtProductId.Text + "','" + txtName.Text + "','" + cbBrand.SelectedItem + "','" + CheckedRadioButton(gb_Type) + "','" + CheckedRadioButton(gb_Subtype) + "','" + cbColor.SelectedItem + "','" + cbSize.SelectedItem + "','" + txtPrice.Text + "','" + txtDiscount.Text + "','" + txtStock.Text + "')", DatabaseConnection.Connection);
+                        command = new SqlCommand("insert into product values ('" + txtProductId.Text + "','" + txtName.Text + "','" + cbBrand.SelectedItem + "','" + CheckedRadioButton(gb_Type) + "','" + CheckedRadioButton(gb_Subtype) + "','" + cbColor.SelectedItem + "','" + cbSize.SelectedItem + "','" + txtPrice.Text + "','" + txtDiscount.Text + "','" + txtStock.Text + "')", ShopManagement.Connection);
                     else
-                        command = new SqlCommand("update product set product_id = '" + txtProductId.Text + "', name = '" + txtName.Text + "', brand = '" + cbBrand.SelectedItem + "', type = '" + CheckedRadioButton(gb_Type) + "', subtype = '" + CheckedRadioButton(gb_Subtype) + "', color = '" + cbColor.SelectedItem + "', size = '" + cbSize.SelectedItem + "', price = '" + txtPrice.Text + "', discount = '" + txtDiscount.Text + "', stock = '" + txtStock.Text + "' where id = '" + (int)dgv_Product.CurrentRow.Cells[0].Value + "'", DatabaseConnection.Connection);
+                        command = new SqlCommand("update product set product_id = '" + txtProductId.Text + "', name = '" + txtName.Text + "', brand = '" + cbBrand.SelectedItem + "', type = '" + CheckedRadioButton(gb_Type) + "', subtype = '" + CheckedRadioButton(gb_Subtype) + "', color = '" + cbColor.SelectedItem + "', size = '" + cbSize.SelectedItem + "', price = '" + txtPrice.Text + "', discount = '" + txtDiscount.Text + "', stock = '" + txtStock.Text + "' where id = '" + (int)dgv_Product.CurrentRow.Cells[0].Value + "'", ShopManagement.Connection);
                     command.ExecuteNonQuery();
                     BindData();
                     MessageBox.Show("Your data has been successfully saved.", "Message", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -95,38 +95,10 @@ namespace ShopManagementApp
                 cbSize.DataSource = adultsFootwearSize;
             else if (rbFootwear.Checked && rbKids.Checked)
                 cbSize.DataSource = kidsFootwearSize;
-        }
-
-        private void rbClothing_CheckedChanged(object sender, EventArgs e)
-        {
-            if (rbClothing.Checked && (rbMale.Checked || rbFemale.Checked))
+            else if (rbClothing.Checked && (rbMale.Checked || rbFemale.Checked))
                 cbSize.DataSource = adultsClothingSize;
             else if (rbClothing.Checked && rbKids.Checked)
                 cbSize.DataSource = kidsClothingSize;
-        }
-
-        private void rbMale_CheckedChanged(object sender, EventArgs e)
-        {
-            if (rbClothing.Checked && rbMale.Checked)
-                cbSize.DataSource = adultsClothingSize;
-            else if (rbFootwear.Checked && rbMale.Checked)
-                cbSize.DataSource = adultsFootwearSize;
-        }
-
-        private void rbFemale_CheckedChanged(object sender, EventArgs e)
-        {
-            if (rbClothing.Checked && rbFemale.Checked)
-                cbSize.DataSource = adultsClothingSize;
-            else if (rbFootwear.Checked && rbFemale.Checked)
-                cbSize.DataSource = adultsFootwearSize;
-        }
-
-        private void rbKids_CheckedChanged(object sender, EventArgs e)
-        {
-            if (rbClothing.Checked && rbKids.Checked)
-                cbSize.DataSource = kidsClothingSize;
-            else if (rbFootwear.Checked && rbKids.Checked)
-                cbSize.DataSource = kidsFootwearSize;
         }
 
         private void dgv_Product_MouseClick(object sender, MouseEventArgs e)
@@ -142,12 +114,9 @@ namespace ShopManagementApp
 
         private void txtSearch_KeyDown(object sender, KeyEventArgs e)
         {
-            SqlCommand command = new SqlCommand("select * from product where product_id LIKE '" + txtSearch.Text + "%' OR name LIKE '" + txtSearch.Text + "%' OR price LIKE '" + txtSearch.Text + "%' OR discount = '" + txtSearch.Text + "'", DatabaseConnection.Connection);
-            if (e.KeyCode == Keys.Enter)
-            {
-                if (!string.IsNullOrEmpty(txtSearch.Text))
-                    BindData(command);
-            }
+            SqlCommand command = new SqlCommand("select * from product where product_id LIKE '" + txtSearch.Text + "%' OR name LIKE '" + txtSearch.Text + "%' OR price LIKE '" + txtSearch.Text + "%' OR discount = '" + txtSearch.Text + "'", ShopManagement.Connection);
+            if (e.KeyCode == Keys.Enter && !string.IsNullOrEmpty(txtSearch.Text))
+                BindData(command);
         }
 
         private void txtProductId_Validating(object sender, CancelEventArgs e)
@@ -197,31 +166,45 @@ namespace ShopManagementApp
 
         private void BindData(SqlCommand command = null)
         {
-            if (command == null)
-                command = new SqlCommand("select * from product", DatabaseConnection.Connection);
-            SqlDataAdapter productAdapter = new SqlDataAdapter(command);
-            DataTable productTable = new DataTable();
-            productAdapter.Fill(productTable);
-            dgv_Product.DataSource = productTable;
+            try
+            {
+                if (command == null)
+                    command = new SqlCommand("select * from product", ShopManagement.Connection);
+                SqlDataAdapter productAdapter = new SqlDataAdapter(command);
+                DataTable productTable = new DataTable();
+                productAdapter.Fill(productTable);
+                dgv_Product.DataSource = productTable;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Message", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void BindFields()
         {
-            if (dgv_Product.CurrentRow.Index < dgv_Product.Rows.Count - 1)
+            try
             {
-                txtProductId.Text = (string)dgv_Product.CurrentRow.Cells[1].Value;
-                txtName.Text = (string)dgv_Product.CurrentRow.Cells[2].Value;
-                cbBrand.SelectedItem = (string)dgv_Product.CurrentRow.Cells[3].Value;
-                cbColor.SelectedItem = (string)dgv_Product.CurrentRow.Cells[6].Value;
-                cbSize.SelectedItem = dgv_Product.CurrentRow.Cells[7].Value.ToString();
-                txtPrice.Text = dgv_Product.CurrentRow.Cells[8].Value.ToString();
-                txtDiscount.Text = dgv_Product.CurrentRow.Cells[9].Value.ToString();
-                gb_Type.Controls.OfType<RadioButton>().Where(r => r.Text == (string)dgv_Product.CurrentRow.Cells[4].Value).FirstOrDefault().Checked = true;
-                gb_Subtype.Controls.OfType<RadioButton>().Where(r => r.Text == (string)dgv_Product.CurrentRow.Cells[5].Value).FirstOrDefault().Checked = true;
-                txtStock.Text = dgv_Product.CurrentRow.Cells[10].Value.ToString();
+                if (dgv_Product.CurrentRow.Index < dgv_Product.Rows.Count - 1)
+                {
+                    txtProductId.Text = (string)dgv_Product.CurrentRow.Cells[1].Value;
+                    txtName.Text = (string)dgv_Product.CurrentRow.Cells[2].Value;
+                    cbBrand.SelectedItem = (string)dgv_Product.CurrentRow.Cells[3].Value;
+                    cbColor.SelectedItem = (string)dgv_Product.CurrentRow.Cells[6].Value;
+                    cbSize.SelectedItem = dgv_Product.CurrentRow.Cells[7].Value.ToString();
+                    txtPrice.Text = dgv_Product.CurrentRow.Cells[8].Value.ToString();
+                    txtDiscount.Text = dgv_Product.CurrentRow.Cells[9].Value.ToString();
+                    gb_Type.Controls.OfType<RadioButton>().Where(r => r.Text == (string)dgv_Product.CurrentRow.Cells[4].Value).FirstOrDefault().Checked = true;
+                    gb_Subtype.Controls.OfType<RadioButton>().Where(r => r.Text == (string)dgv_Product.CurrentRow.Cells[5].Value).FirstOrDefault().Checked = true;
+                    txtStock.Text = dgv_Product.CurrentRow.Cells[10].Value.ToString();
+                }
+                else
+                    FormControls.ResetFields(txtProductId, txtName, txtPrice, txtStock, txtDiscount, cbBrand, cbColor, cbSize, rbClothing, rbFemale, rbFootwear, rbKids, rbMale);
             }
-            else
-                FormControls.ResetFields(txtProductId, txtName, txtPrice, txtStock, txtDiscount, cbBrand, cbColor, cbSize, rbClothing, rbFemale, rbFootwear, rbKids, rbMale);
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Message", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private string CheckedRadioButton(GroupBox gb)

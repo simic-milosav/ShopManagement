@@ -113,7 +113,6 @@
     <Compile Include="Forms\CustomersManagement.Designer.cs">
       <DependentUpon>CustomersManagement.cs</DependentUpon>
     </Compile>
-    <Compile Include="Control\DatabaseConnection.cs" />
     <Compile Include="Control\FormControls.cs" />
     <Compile Include="Forms\NewOrder.cs">
       <SubType>Form</SubType>

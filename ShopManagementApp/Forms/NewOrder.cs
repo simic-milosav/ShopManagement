@@ -10,8 +10,8 @@ namespace ShopManagementApp.Forms
     {
         private Order order;
         private Customer customer;
-        private readonly SqlCommand defaultCustomersCommand = new SqlCommand("select * from customer", DatabaseConnection.Connection);
-        private readonly SqlCommand defaultProductsCommand = new SqlCommand("select * from product", DatabaseConnection.Connection);
+        private readonly SqlCommand defaultCustomersCommand = new SqlCommand("select * from customer", ShopManagement.Connection);
+        private readonly SqlCommand defaultProductsCommand = new SqlCommand("select * from product", ShopManagement.Connection);
         private bool cstIsSelected;
         private bool productsAdded;
 
@@ -22,13 +22,11 @@ namespace ShopManagementApp.Forms
 
         private void NewOrder_Load(object sender, EventArgs e)
         {
-            FormControls.SetComboboxDefaultValue(cBoxType);
-            BindData();
             order = new Order(DateTime.Now);
             gb_NewCst.Enabled = false;
-            dgv_Customers.Columns[0].Visible = false;
-            dgv_Customers.Columns[7].Visible = false;
-            dgv_Products.Columns[2].Visible = false;
+            FormControls.HideDGVColumns(dgv_Customers.Columns[0], dgv_Customers.Columns[7], dgv_Products.Columns[2]);
+            FormControls.SetComboboxDefaultValue(cBoxType);
+            BindData();
         }
 
         private void rb_ExCst_CheckedChanged(object sender, EventArgs e)
@@ -72,7 +70,7 @@ namespace ShopManagementApp.Forms
         {
             if (e.KeyCode == Keys.Enter && !string.IsNullOrEmpty(txt_Search.Text))
             {
-                SqlCommand command = new SqlCommand("select * from product where product_id = '" + txt_Search.Text + "' OR name LIKE '" + txt_Search.Text + "%' OR brand = '" + txt_Search.Text + "' OR type = '" + txt_Search.Text + "' OR subtype = '" + txt_Search.Text + "'", DatabaseConnection.Connection);
+                SqlCommand command = new SqlCommand("select * from product where product_id = '" + txt_Search.Text + "' OR name LIKE '" + txt_Search.Text + "%' OR brand = '" + txt_Search.Text + "' OR type = '" + txt_Search.Text + "' OR subtype = '" + txt_Search.Text + "'", ShopManagement.Connection);
                 BindData(command, dgv_Products);
             }
         }
@@ -93,7 +91,7 @@ namespace ShopManagementApp.Forms
         {
             if (e.KeyCode == Keys.Enter && !string.IsNullOrEmpty(txt_Search.Text))
             {
-                SqlCommand command = new SqlCommand("select * from customer where name LIKE '" + txt_SearchCst.Text + "%' OR surname LIKE '" + txt_SearchCst.Text + "%' OR address LIKE '" + txt_SearchCst.Text + "%' OR phone_number = '" + txt_SearchCst.Text + "' OR email = '" + txt_SearchCst.Text + "' OR type = '" + txt_SearchCst.Text + "'", DatabaseConnection.Connection);
+                SqlCommand command = new SqlCommand("select * from customer where name LIKE '" + txt_SearchCst.Text + "%' OR surname LIKE '" + txt_SearchCst.Text + "%' OR address LIKE '" + txt_SearchCst.Text + "%' OR phone_number = '" + txt_SearchCst.Text + "' OR email = '" + txt_SearchCst.Text + "' OR type = '" + txt_SearchCst.Text + "'", ShopManagement.Connection);
                 BindData(command, dgv_Customers);
             }
         }
@@ -124,7 +122,7 @@ namespace ShopManagementApp.Forms
             {
                 if (dgv_Customers.SelectedRows.Count == 1)
                 {
-                    SqlCommand getCustomer = new SqlCommand("select customer_id, type, orders_number from customer where customer_id = '" + dgv_Customers.CurrentRow.Cells[0].Value + "'", DatabaseConnection.Connection);
+                    SqlCommand getCustomer = new SqlCommand("select customer_id, type, orders_number from customer where customer_id = '" + dgv_Customers.CurrentRow.Cells[0].Value + "'", ShopManagement.Connection);
                     customer = new Customer();
                     using (SqlDataReader customerReader = getCustomer.ExecuteReader())
                     {
@@ -136,9 +134,7 @@ namespace ShopManagementApp.Forms
                         }
                     }
                     cstIsSelected = true;
-                    btn_SelectCst.Enabled = false;
-                    dgv_Customers.Enabled = false;
-                    gb_SelectCst.Enabled = false;
+                    FormControls.ShowFields(false, btn_SelectCst, gb_SelectCst, dgv_Customers, label9, txt_SearchCst);
                 }
                 else
                     MessageBox.Show("Please select one customer!", "Message", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -217,14 +213,14 @@ namespace ShopManagementApp.Forms
             int customerID;
             if (rb_NewCst.Checked)
             {
-                SqlCommand newCustomer = new SqlCommand("insert into customer values ('" + txtName.Text + "','" + txtSurname.Text + "','" + txtAddress.Text + "','" + txtPhoneNum.Text + "','" + txtEmail.Text + "','" + cBoxType.Text + "','" + 1 + "')", DatabaseConnection.Connection);
+                SqlCommand newCustomer = new SqlCommand("insert into customer values ('" + txtName.Text + "','" + txtSurname.Text + "','" + txtAddress.Text + "','" + txtPhoneNum.Text + "','" + txtEmail.Text + "','" + cBoxType.Text + "','" + 1 + "')", ShopManagement.Connection);
                 newCustomer.ExecuteNonQuery();
-                SqlCommand newCustomerId = new SqlCommand("select max(customer_id) from customer", DatabaseConnection.Connection);
+                SqlCommand newCustomerId = new SqlCommand("select max(customer_id) from customer", ShopManagement.Connection);
                 customerID = (int)newCustomerId.ExecuteScalar();
             }
             else
             {
-                SqlCommand updateCustomer = new SqlCommand("update customer set type = '" + customer.Type + "', orders_number = '" + customer.OrdersNum + "' where customer_id = '" + customer.CustomerId + "'", DatabaseConnection.Connection);
+                SqlCommand updateCustomer = new SqlCommand("update customer set type = '" + customer.Type + "', orders_number = '" + customer.OrdersNum + "' where customer_id = '" + customer.CustomerId + "'", ShopManagement.Connection);
                 customer.OrdersNum += 1;
                 customer.SetType();
                 customerID = customer.CustomerId;
@@ -237,21 +233,21 @@ namespace ShopManagementApp.Forms
         {
             order.Shipping = rb_ChargeShp.Checked ? float.Parse(txt_ShpPrice.Text) : 0;
             order.CalculatePrice();
-            SqlCommand newOrder = new SqlCommand("insert into orders values ('" + order.Price + "','" + order.Created + "', 'Preparing')", DatabaseConnection.Connection);
+            SqlCommand newOrder = new SqlCommand("insert into orders values ('" + order.Price + "','" + order.Created + "', 'Preparing')", ShopManagement.Connection);
             newOrder.ExecuteNonQuery();
-            SqlCommand newOrderId = new SqlCommand("select max(order_id) from orders", DatabaseConnection.Connection);
+            SqlCommand newOrderId = new SqlCommand("select max(order_id) from orders", ShopManagement.Connection);
             order.OrderId = (int)newOrderId.ExecuteScalar();
         }
 
         private void FillTables(int customerID)
         {
-            SqlCommand customerOrders = new SqlCommand("insert into customer_orders values ('" + customerID + "','" + order.OrderId + "')", DatabaseConnection.Connection);
+            SqlCommand customerOrders = new SqlCommand("insert into customer_orders values ('" + customerID + "','" + order.OrderId + "')", ShopManagement.Connection);
             customerOrders.ExecuteNonQuery();
             foreach (Product product in order.Products)
             {
-                SqlCommand updateProduct = new SqlCommand("update product set stock = '" + product.Stock + "' where product_id = '" + product.ProductId + "'", DatabaseConnection.Connection);
+                SqlCommand updateProduct = new SqlCommand("update product set stock = '" + product.Stock + "' where product_id = '" + product.ProductId + "'", ShopManagement.Connection);
                 updateProduct.ExecuteNonQuery();
-                SqlCommand ordersProducts = new SqlCommand("insert into order_products values ('" + order.OrderId + "','" + product.ProductId + "','" + product.SelectedAmount + "')", DatabaseConnection.Connection);
+                SqlCommand ordersProducts = new SqlCommand("insert into order_products values ('" + order.OrderId + "','" + product.ProductId + "','" + product.SelectedAmount + "')", ShopManagement.Connection);
                 ordersProducts.ExecuteNonQuery();
             }
         }

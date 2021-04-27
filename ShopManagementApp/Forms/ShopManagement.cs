@@ -8,6 +8,8 @@ namespace ShopManagementApp
 {
     public partial class ShopManagement : Form
     {
+        public static SqlConnection Connection { get; set; }
+
         public ShopManagement()
         {
             InitializeComponent();
@@ -15,15 +17,15 @@ namespace ShopManagementApp
 
         ~ShopManagement()
         {
-            DatabaseConnection.Connection.Close();
+            Connection.Close();
         }
 
         private void ShopManagement_Load(object sender, EventArgs e)
         {
             try
             {
-                DatabaseConnection.Connection = new SqlConnection(ConfigurationManager.ConnectionStrings[1].ConnectionString);
-                DatabaseConnection.Connection.Open();
+                Connection = new SqlConnection(ConfigurationManager.ConnectionStrings[1].ConnectionString);
+                Connection.Open();
                 MessageBox.Show("Successfully connected to database.", "Message", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
